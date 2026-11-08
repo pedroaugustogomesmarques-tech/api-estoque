@@ -12,16 +12,23 @@ class CategoriaController {
             return res.status(400).json({ erro: error.message });
         }
     }
-    
+
     async listar(req, res) {
         try {
-            const categorias = await categoriaService.listarCategorias();
-            return res.status(200).json(categorias);
+            // 1. Pega os query params da URL: /api/categorias?page=2&limit=10
+            const { page, limit } = req.query;
+
+            // 2. Entrega para o service, que faz as regras e a paginação
+            const resultado = await categoriaService.listarCategorias(page, limit);
+
+            // 3. Devolve o objeto paginado com status 200
+            return res.status(200).json(resultado);
         } catch (error) {
-            return res.status(500).json({ erro: error.message });
+            // 4. Se o service barrar (page/limit inválido), responde 400
+            return res.status(400).json({ erro: error.message });
         }
     }
-    
+
     async buscar(req, res) {
         try {
             const categoria = await categoriaService.buscarCategoria(req.params.id);
@@ -30,7 +37,7 @@ class CategoriaController {
             return res.status(404).json({ erro: error.message }); // 404 (Not Found)
         }
     }
-    
+
     async atualizar(req, res) {
         try {
             const categoria = await categoriaService.atualizarCategoria(req.params.id, req.body);
@@ -39,7 +46,7 @@ class CategoriaController {
             return res.status(400).json({ erro: error.message });
         }
     }
-    
+
     async deletar(req, res) {
         try {
             await categoriaService.deletarCategoria(req.params.id);
