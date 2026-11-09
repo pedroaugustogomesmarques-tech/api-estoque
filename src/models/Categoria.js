@@ -1,14 +1,19 @@
 const mongoose = require('mongoose');
 
 const categoriaSchema = new mongoose.Schema({
-    nome: {
-        type: String,
-        required: true,
-        trim: true
-    }
+  id: { 
+    type: Number, 
+    unique: true, 
+    index: true 
+  },
+  nome: {
+    type: String,
+    required: true,
+    trim: true
+  }
 }, {
-    timestamps: true
+  timestamps: true,
+  versionKey: false // Remove aquele campo __v do MongoDB que polui o JSON
 });
 
-// Garanta que está exportando o mongoose.model diretamente:
 module.exports = mongoose.model('Categoria', categoriaSchema);
