@@ -25,7 +25,10 @@ class CategoriaRepository {
     }
 
     async deletar(id) {
-        return await Categoria.findByIdAndDelete(id);
+        return await Categoria.findByIdAndUpdate(id, 
+        { status: 'INATIVO' }, 
+        { new: true }
+    );
     }
 }
 
