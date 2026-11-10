@@ -16,9 +16,9 @@ class CategoriaRepository {
         return await Categoria.countDocuments(filtros); // total de categorias no banco
     }
     
-    async buscarPorId(id) {
-        return await Categoria.findById(id);
-    }
+   async buscarPorId(id) {
+    return await Categoria.findById(id).populate('itens');
+}
 
     async atualizar(id, dados) {
         return await Categoria.findByIdAndUpdate(id, dados, { new: true });
