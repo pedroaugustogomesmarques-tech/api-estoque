@@ -8,12 +8,12 @@ class CategoriaService {
         return await categoriaRepository.criar(dados);
     }
 
-    async listarCategorias(page, limit) {
-        // 1. Valores padrão: se não vier nada na URL, usa página 1 e 10 por página
+    async listarCategorias(page, limit, id, nome, data) {
+        // . Valores padrão: se não vier nada na URL, usa página 1 e 10 por página
         const pagina = page === undefined ? 1 : Number(page);
         const limite = limit === undefined ? 10 : Number(limit);
 
-        // 2. Validações (regras de negócio)
+        // . Validações (regras de negócio)
         if (!Number.isInteger(pagina) || pagina < 1) {
             throw new Error('O parâmetro page deve ser um número inteiro maior ou igual a 1.');
         }
@@ -21,14 +21,33 @@ class CategoriaService {
             throw new Error('O parâmetro limit deve ser um número inteiro entre 1 e 100.');
         }
 
-        // 3. Conta de quantos documentos pular
+        const filtros = {};
+
+        // Regra do ID (Exato)
+        if (id) {
+            filtros._id = id;
+        }
+
+        // Regra do Nome (Busca parcial com Regex)
+        if (nome) {
+            filtros.nome = { $regex: nome, $options: 'i' };
+        }
+
+        // Regra da Data (Cria a janela de 24 horas para aquele dia)
+        if (data) {
+            const dataInicio = new Date(`${data}T00:00:00.000Z`);
+            const dataFim = new Date(`${data}T23:59:59.999Z`);
+            filtros.createdAt = { $gte: dataInicio, $lte: dataFim };
+        }
+
+        // . Conta de quantos documentos pular
         const skip = (pagina - 1) * limite;
 
-        // 4. Busca a página e o total
-        const dados = await categoriaRepository.listar(skip, limite);
-        const total = await categoriaRepository.contar();
+        // . Busca a página e o total
+        const dados = await categoriaRepository.listar(skip, limite, filtros);
+        const total = await categoriaRepository.contar(filtros);
 
-        // 5. Monta a resposta
+        // . Monta a resposta
         return {
             dados,
             pagina,
