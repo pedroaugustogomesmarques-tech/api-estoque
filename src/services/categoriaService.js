@@ -57,13 +57,17 @@ class CategoriaService {
         };
     }
 
-    async buscarCategoria(id) {
-        const categoria = await categoriaRepository.buscarPorId(id);
-        if (!categoria) {
-            throw new Error('Categoria não encontrada.');
-        }
-        return categoria;
+    async buscarPorId(id) {
+    if (id.length !== 24) {
+        throw new Error('Formato de ID inválido.');
     }
+
+    //  Busca no repositório
+    const categoria = await categoriaRepository.buscarPorId(id);
+
+    // 3. Retorna a categoria (se não achar, vai retornar null e o Controller lida com o 404)
+    return categoria;
+}
 
     async atualizarCategoria(id, dados) {
         return await categoriaRepository.atualizar(id, dados);
