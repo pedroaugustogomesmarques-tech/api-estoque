@@ -9,7 +9,12 @@ const categoriaSchema = new mongoose.Schema({
     itens: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Item' // Tem que ser exatamente o nome que você usou no module.exports do Item
-    }]
+    }],
+    status: {
+        type: String,
+        enum: ['ATIVO', 'INATIVO'],
+        default: 'ATIVO'
+    }
 }, {
     timestamps: true
 });

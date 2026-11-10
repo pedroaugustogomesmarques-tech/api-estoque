@@ -19,6 +19,11 @@ const itemSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Categoria',
         required: true
+    },
+    status: {
+        type: String,
+        enum: ['ATIVO', 'INATIVO'],
+        default: 'ATIVO'
     }
 }, {
     timestamps: true
