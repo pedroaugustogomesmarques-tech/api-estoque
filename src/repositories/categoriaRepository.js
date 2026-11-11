@@ -17,7 +17,7 @@ class CategoriaRepository {
     }
     
    async buscarPorId(id) {
-    return await Categoria.findOne({_id: id}).populate('itens');
+    return await Categoria.findOne({id: Number(id)}).populate('itens');
 }
 
     async atualizar(id, dados) {
