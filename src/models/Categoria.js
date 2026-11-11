@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const categoriaSchema = new mongoose.Schema({
     nome: {
@@ -18,6 +19,8 @@ const categoriaSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+
+categoriaSchema.plugin(AutoIncrement, { inc_field: 'id' });
 
 // Garanta que está exportando o mongoose.model diretamente:
 module.exports = mongoose.model('Categoria', categoriaSchema);
