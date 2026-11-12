@@ -58,8 +58,9 @@ class CategoriaService {
     }
 
     async buscarPorId(id) {
-    if (id.length !== 24) {
-        throw new Error('Formato de ID inválido.');
+    // Verifica se o ID recebido pode ser convertido para um número válido
+    if (isNaN(Number(id))) {
+        throw new Error('Formato de ID inválido. O ID deve ser um número.');
     }
 
     //  Busca no repositório
