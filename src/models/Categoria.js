@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const categoriaSchema = new mongoose.Schema({
+
+    id: {
+    type: Number,
+    unique: true // Isso impede que existam dois IDs iguais no banco
+}, 
     nome: {
         type: String,
         required: true,
@@ -17,7 +22,15 @@ const categoriaSchema = new mongoose.Schema({
         default: 'ATIVO'
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    
+    toJSON: {
+        transform: function (doc, ret) {
+            delete ret._id;
+            delete ret.__v;
+            return ret;
+        }
+    }
 });
 
 categoriaSchema.plugin(AutoIncrement, { inc_field: 'id' });
