@@ -16,10 +16,18 @@ class CategoriaController {
     async listar(req, res) {
         try {
     // 1. Extrai a paginação e os novos filtros da URL
-    const { page, limit, id, nome, data } = req.query;
+    const { page, limit, id, nome, status, dataInicio, dataFim } = req.query;
 
     // 2. Repassa tudo para o Service (ajuste o nome do método do service se for diferente)
-    const resultado = await categoriaService.listarCategorias(page, limit, id, nome, data);
+    const resultado = await categoriaService.listarCategorias({
+        page,
+        limit,
+        id, 
+        nome, 
+        status,
+        dataInicio,
+        dataFim
+    });
 
             // 3. Devolve o objeto paginado com status 200
             return res.status(200).json(resultado);

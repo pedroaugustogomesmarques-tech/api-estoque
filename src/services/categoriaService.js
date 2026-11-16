@@ -8,7 +8,7 @@ class CategoriaService {
         return await categoriaRepository.criar(dados);
     }
 
-    async listarCategorias(page, limit, id, nome, data) {
+    async listarCategorias({page, limit, id, nome, status, dataInicio, dataFim} = {}) {
         // . Valores padrão: se não vier nada na URL, usa página 1 e 10 por página
         const pagina = page === undefined ? 1 : Number(page);
         const limite = limit === undefined ? 10 : Number(limit);
@@ -23,10 +23,16 @@ class CategoriaService {
 
         const filtros = {};
 
+        filtros.status = status ? status.toUpperCase() : 'ATIVO';
+
         // Regra do ID (Exato)
-        if (id) {
-            filtros._id = id;
+       if (id) {
+        const idNumerico = Number(id);
+        if (isNaN(idNumerico)) {
+            throw new Error('O parâmetro id deve ser um número válido.');
         }
+        filtros.id = idNumerico;
+    }
 
         // Regra do Nome (Busca parcial com Regex)
         if (nome) {
@@ -34,11 +40,21 @@ class CategoriaService {
         }
 
         // Regra da Data (Cria a janela de 24 horas para aquele dia)
-        if (data) {
-            const dataInicio = new Date(`${data}T00:00:00.000Z`);
-            const dataFim = new Date(`${data}T23:59:59.999Z`);
-            filtros.createdAt = { $gte: dataInicio, $lte: dataFim };
+     if (dataInicio || dataFim) {
+        filtros.createdAt = {};
+
+        if (dataInicio) {
+            const inicio = new Date(`${dataInicio}T00:00:00.000Z`); if (isNaN(inicio.getTime())) { throw new Error('Data de início inválida. Use o formato AAAA-MM-DD.'); } filtros.createdAt.$gte = inicio; }  if (dataFim) { const fim = new Date(`${dataFim}T23:59:59.999Z`);
+            if (isNaN(fim.getTime())) {
+                throw new Error('Data fim inválida. Use o formato AAAA-MM-DD.');
+            }
+            filtros.createdAt.$lte = fim;
         }
+
+        if (filtros.createdAt.$gte && filtros.createdAt.$lte && filtros.createdAt.$gte > filtros.createdAt.$lte) {
+            throw new Error('A data de início não pode ser maior que a data fim.');
+        }
+    }
 
         // . Conta de quantos documentos pular
         const skip = (pagina - 1) * limite;
